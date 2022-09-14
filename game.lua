@@ -1,8 +1,11 @@
 gravity = 9.81
 
 player = {}
-player.x = 50
+player.x = 20
 player.y = 96
+player.w = 7
+player.h = 7
+-- player.h = 2 -- make the avatar height tiny until I deal with floor collisions
 player.sprite = 0
 player.speed = 2
 player.moving = 0
@@ -24,16 +27,26 @@ function collide(vx,vy)
 
 	-- we'll test two points:
 	if vx!=0 then
-		x1=player.x+sgn(vx)*player.w
-		x2=x1
+        if vx>0 then
+            x1=player.x+sgn(vx)*player.w
+        else
+            x1=player.x
+        end
+        x2 = x1
 
 		y1=player.y-player.h
 		y2=player.y+player.h
-	else
-		y1=player.y+sgn(vy)*player.h
+	end
+
+    if vy!=0 then
+        if vy>0 then
+    		y1=player.y+sgn(vy)*player.h
+        else
+            y1=player.y
+        end
 		y2=y1
 		
-		x1=player.x-player.w
+		x1=player.x
 		x2=player.x+player.w
 	end
 	
@@ -48,10 +61,15 @@ function collide(vx,vy)
 	local tile1=mget(x1/8,y1/8)
 	local tile2=mget(x2/8,y2/8)
   if isplatform(tile1) or isplatform(tile2) then
-    print("WALL!")
+    if isplatform(tile1) then
+        print("WALL 1!")
+    end
+    if isplatform(tile2) then
+        print("WALL 2!")
+    end
     return true
   end
-
+    print("NO WALL!")
 	return false
 end
 
@@ -72,22 +90,33 @@ function _update()
     last = time()
     if (btn(0)) then
         player.moving = -1
-        player.x -= player.speed
-        if player.x < -10 then
-            player.x = 128
+        if not collide(-player.speed, 0) then
+            player.x -= player.speed
+            if player.x < -10 then
+                player.x = 128
+            end
         end
         moveanim()
     end
     if (btn(1)) then
         player.moving = 1
-        player.x += player.speed
-        if player.x > 128 then
-            player.x = -10
+        if not collide(player.speed, 0) then
+            player.x += player.speed
+            if player.x > 128 then
+                player.x = -10
+            end
         end
         moveanim()
     end
     if (btn(2)) then
-      player.y -= player.speed
+        if not collide(0, -player.speed) then
+            player.y -= player.speed
+        end
+    end
+    if (btn(3)) then
+        if not collide(0, player.speed) then
+            player.y += player.speed
+        end
     end
     if player.moving == 0 then
         player.sprite = 0
@@ -104,5 +133,7 @@ function _draw()
     end
     // print("dir: "..player.moving, 0, 0)
     // print("x: "..player.x..", y: "..player.y, 0, 0)
-    print("fps: "..fps)
+    // print("fps: "..fps)
+    print(collide(0, player.speed))
+    print(collide(0, -player.speed))
 end
