@@ -1,0 +1,18 @@
+name: build-game
+on: [push]
+jobs:
+  check-bats-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - run: pip install ./picotool
+      - run: p8tool build build.p8 --gfx assets.p8 --map assets.p8 --lua game.lua --empty-gff --empty-sfx --empty-music
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build.p8
+          path: build.p8
