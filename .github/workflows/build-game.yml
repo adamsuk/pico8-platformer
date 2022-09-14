@@ -1,5 +1,6 @@
 name: build-game
-on: [push]
+on:
+  push
 jobs:
   build-game:
     runs-on: ubuntu-latest
@@ -17,6 +18,7 @@ jobs:
           name: ${{ secrets.PICO8_GAME_NAME }}.p8
           path: ${{ secrets.PICO8_GAME_NAME }}.p8
       - name: Release game build
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v1
         with:
           files: ${{ secrets.PICO8_GAME_NAME }}.p8
