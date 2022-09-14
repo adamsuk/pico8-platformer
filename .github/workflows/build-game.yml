@@ -11,14 +11,14 @@ jobs:
         with:
           python-version: '3.9'
       - run: pip install ./picotool
-      - run: p8tool build ${{ secrets.PICO8_GAME_NAME }} --gfx assets.p8 --map assets.p8 --lua game.lua --empty-gff --empty-sfx --empty-music
+      - run: p8tool build ${{ secrets.PICO8_GAME_NAME }}.p8 --gfx assets.p8 --map assets.p8 --lua game.lua --empty-gff --empty-sfx --empty-music
       - uses: actions/upload-artifact@v3
         with:
-          name: ${{ secrets.PICO8_GAME_NAME }}
-          path: ${{ secrets.PICO8_GAME_NAME }}
+          name: ${{ secrets.PICO8_GAME_NAME }}.p8
+          path: ${{ secrets.PICO8_GAME_NAME }}.p8
       - name: Release game build
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ secrets.PICO8_GAME_NAME }}
+          files: ${{ secrets.PICO8_GAME_NAME }}.p8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
